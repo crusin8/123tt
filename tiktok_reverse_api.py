@@ -26,6 +26,7 @@ class TikTokReverseAPI:
     @classmethod
     def login(cls, username, password):
         """Login to TikTok with username and password and return API instance"""
+        logging.info(f"Starting login process for username: {username}")
         login_client = TikTokLogin()
         tokens = login_client.get_tokens(username, password)
         
@@ -33,22 +34,46 @@ class TikTokReverseAPI:
             logging.error("Login failed: Could not obtain tokens")
             return None
             
-        return cls(
+        logging.info(f"Login successful, obtained tokens: {list(tokens.keys())}")
+        
+        # Create API instance
+        api_instance = cls(
             session_id=tokens.get('session_id'),
             ms_token=tokens.get('ms_token'),
             device_id=tokens.get('device_id'),
             csrf_token=tokens.get('csrf_token')
         )
         
+        # Test if login was actually successful by checking login status
+        if not api_instance.login_status():
+            logging.error("Login validation failed. Tokens might be invalid.")
+            return None
+            
+        return api_instance
+        
     def _setup_session(self):
         """Setup session with cookies and headers"""
         # Set base cookies
         cookies = {
             "sessionid": self.session_id,
-            "msToken": self.ms_token,
         }
         
+        if self.ms_token:
+            cookies["msToken"] = self.ms_token
+        else:
+            # Generate a new msToken if one wasn't provided
+            from tiktok_login import TikTokLogin
+            login_client = TikTokLogin()
+            self.ms_token = login_client._generate_ms_token()
+            cookies["msToken"] = self.ms_token
+        
         if self.device_id:
+            cookies["s_v_web_id"] = self.device_id
+        else:
+            # Generate a new device ID if one wasn't provided
+            from tiktok_login import TikTokLogin
+            login_client = TikTokLogin()
+            self.device_id = login_client._generate_device_id()
             cookies["s_v_web_id"] = self.device_id
             
         if self.csrf_token:

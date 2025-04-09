@@ -1,11 +1,19 @@
 import argparse
 import logging
 import json
+import sys
 from tiktok_login import TikTokLogin
 from tiktok_reverse_api import TikTokReverseAPI
 
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Set up logging with more detail
+logging.basicConfig(
+    level=logging.DEBUG,  # Changed to DEBUG for more verbose output
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('tiktok_login_debug.log')  # Also log to file
+    ]
+)
 
 def main():
     parser = argparse.ArgumentParser(description='Test TikTok direct login')
@@ -14,8 +22,17 @@ def main():
     parser.add_argument('--save_tokens', action='store_true', help='Save obtained tokens to .env.login file')
     parser.add_argument('--test_api', action='store_true', help='Test API functions after login')
     parser.add_argument('--video_id', help='Video ID to test with (if test_api is enabled)')
+    parser.add_argument('--debug', action='store_true', help='Enable request debugging')
     
     args = parser.parse_args()
+    
+    # Enable requests debug if needed
+    if args.debug:
+        import http.client as http_client
+        http_client.HTTPConnection.debuglevel = 1
+        requests_log = logging.getLogger("requests.packages.urllib3")
+        requests_log.setLevel(logging.DEBUG)
+        requests_log.propagate = True
     
     # First try the direct TikTokLogin class
     logging.info(f"Attempting to login with username: {args.username}")
@@ -55,6 +72,14 @@ def main():
     
     logging.info("Login successful with TikTokReverseAPI.login() method!")
     
+    # Verify login status
+    logging.info("Verifying login status...")
+    if api.login_status():
+        logging.info("Login verification successful!")
+    else:
+        logging.error("Login verification failed!")
+        return 1
+    
     # Test API functions if requested
     if args.test_api:
         if not args.video_id:
@@ -79,6 +104,7 @@ def main():
                 logging.info(f"  Comments: {comments}")
             except KeyError:
                 logging.warning("Video info retrieved but structure is different than expected")
+                logging.debug(f"Full video info structure: {json.dumps(video_info, indent=2)}")
                 sample = json.dumps(video_info)[:200] + "..."
                 logging.info(f"Sample of retrieved data: {sample}")
         else:

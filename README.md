@@ -8,7 +8,7 @@ TikTok için doğrudan HTTP istekleriyle çalışan, reverse engineering mantı�
 - Video yorumu yapma
 - Video beğenme
 - Kullanıcı takip etme
-- Kullanıcı adı ve şifre ile doğrudan giriş yapma
+- Kullanıcı adı ve şifre ile doğrudan giriş yapma (Web ve Mobil API destekli)
 - Tarayıcı çerezleri kullanarak kimlik doğrulama
 
 ## Kurulum
@@ -26,15 +26,18 @@ pip install -r requirements.txt
 
 TikTok API botunu kullanmak için iki farklı yöntemle giriş yapabilirsiniz:
 
-#### A. Doğrudan Kullanıcı Adı ve Şifre ile Giriş (Yeni Özellik)
+#### A. Doğrudan Kullanıcı Adı ve Şifre ile Giriş (Güncellendi)
 
-Artık doğrudan kullanıcı adı ve şifre ile giriş yapabilirsiniz:
+Doğrudan kullanıcı adı ve şifre ile giriş yapabilirsiniz. Güncellenmiş API, birden fazla giriş yöntemini otomatik olarak dener:
 
 ```bash
 python tiktok_reverse_api.py --username "kullaniciadi" --password "şifre" --video_id 7190527287440151814 --comment "Harika video!"
 ```
 
-Bu yöntem, tarayıcıdan token almanıza gerek kalmadan API'yi kullanmanızı sağlar.
+Bu yöntem, tarayıcıdan token almanıza gerek kalmadan API'yi kullanmanızı sağlar ve aşağıdaki yöntemleri otomatik olarak dener:
+1. TikTok Web Passport API
+2. TikTok SSO API
+3. TikTok Mobil API
 
 #### B. Tarayıcı Token'ları ile Giriş
 
@@ -82,6 +85,8 @@ python tiktok_reverse_api.py --username "kullaniciadi" --password "şifre" --vid
 
 ### Doğrudan Giriş Testi
 
+#### Genel Giriş Testi
+
 Doğrudan giriş işlevini test etmek için:
 
 ```bash
@@ -92,6 +97,22 @@ Bu komut:
 - Kullanıcı adı ve şifre ile giriş yapacak
 - Elde edilen token'ları `.env.login` dosyasına kaydedecek
 - API işlevlerini test edecek ve belirtilen video hakkında bilgi alacak
+
+#### Gelişmiş API Giriş Testi (Yeni)
+
+TikTok API giriş sorunlarını gidermek için özel bir test aracı:
+
+```bash
+python test_login_fix.py --username "kullaniciadi" --password "şifre" --method all
+```
+
+Bu komut aşağıdaki giriş yöntemlerini test eder:
+- `--method direct`: Web API passport endpoint'ini kullanarak giriş
+- `--method sso`: TikTok SSO endpoint'ini kullanarak giriş
+- `--method mobile`: Mobil API endpoint'ini kullanarak giriş
+- `--method all`: Tüm yöntemleri sırayla dener (varsayılan)
+
+Her giriş denemesi ayrıntılı günlük kaydı ile `tiktok_login_fix.log` dosyasına kaydedilir.
 
 ### Parametreler
 
@@ -113,6 +134,16 @@ Bot için kullanabileceğiniz parametreler:
 - `--like`: Videoyu beğen
 - `--follow`: Video sahibini takip et
 
+## Güncellemeler (Yeni)
+
+### API login sorunları için çözüm (9 Nisan 2024)
+
+- `"url doesn't match"` hatası için TikTok giriş API endpoint'leri güncellendi
+- Çoklu giriş yöntemi desteği eklendi (Web Passport, SSO ve Mobil API)
+- Test araçları ve detaylı hata ayıklama günlükleri eklendi
+- Token yönetimi ve MS Token oluşturma mekanizması iyileştirildi
+- Mobil API desteği eklendi (daha kararlı giriş yöntemi)
+
 ## Nasıl Çalışır?
 
 Bu API, TikTok'un web sürümünün network isteklerini taklit ederek çalışır. Web uygulamasının kullandığı endpoint'leri ve istekleri analiz ederek:
@@ -133,6 +164,8 @@ Bu yaklaşım sayesinde, herhangi bir tarayıcı otomasyonu veya üçüncü tara
 
 ## Sorun Giderme
 
+- Doğrudan giriş ile ilgili sorunlarda, `test_login_fix.py` scriptini kullanarak hangi giriş yönteminin çalıştığını tespit edin
+- `"url doesn't match"` hatası alırsanız, sistem otomatik olarak alternatif giriş yöntemlerini deneyecektir.
 - Doğrudan giriş ile ilgili sorunlarda, TikTok'un CAPTCHA veya diğer güvenlik önlemlerini etkinleştirmiş olabileceğini unutmayın.
 - Token'lar genellikle belirli bir süre sonra geçerliliğini yitirir. Botun çalışmayı durdurması durumunda, yeni token'lar almanız gerekebilir.
 - "Login failed" hatası alırsanız, oturum token'larınızın süresi dolmuş demektir. Tarayıcıda tekrar giriş yapın ve yeni token'lar alın.
