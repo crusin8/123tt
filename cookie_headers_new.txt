@@ -1,0 +1,17 @@
+Set-Cookie: passport_csrf_token=24765e9a375b92eb66b3088b2e929b3c; Path=/; Domain=musical.ly; Max-Age=5184000; Secure; SameSite=None
+Set-Cookie: passport_csrf_token_default=24765e9a375b92eb66b3088b2e929b3c; Path=/; Domain=musical.ly; Max-Age=5184000; Secure
+Set-Cookie: d_ticket=6d6a84352669c837adadb8dc920f163195557; Path=/; Domain=musical.ly; Max-Age=31536000; HttpOnly
+Set-Cookie: odin_tt=552b13926e7a06013bf26637d7471abcead33f7dd8a1a81d1f04d2a19e212d1c542801c62328679f8bdb0d2fc46a966b80fa8b75e612ca02c6d95e9ea6d6c5ad1833744ca09a34c8b0409280fcb12be4; Path=/; Domain=musical.ly; Max-Age=31536000; HttpOnly
+Set-Cookie: sid_guard=112a00ea3d8542d02cfb066a9d1dc4a5%7C1744218507%7C15552000%7CMon%2C+06-Oct-2025+17%3A08%3A27+GMT; Path=/; Domain=musical.ly; Max-Age=31104000; HttpOnly
+Set-Cookie: uid_tt=b5c5ed2253a43bf32a1d638e7be7937cc43a2900916d43e8818a43d534ffb521; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly
+Set-Cookie: uid_tt_ss=b5c5ed2253a43bf32a1d638e7be7937cc43a2900916d43e8818a43d534ffb521; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly; Secure; SameSite=None
+Set-Cookie: sid_tt=112a00ea3d8542d02cfb066a9d1dc4a5; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly
+Set-Cookie: sessionid=112a00ea3d8542d02cfb066a9d1dc4a5; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly
+Set-Cookie: sessionid_ss=112a00ea3d8542d02cfb066a9d1dc4a5; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly; Secure; SameSite=None
+Set-Cookie: sid_ucp_v1=1.0.0-KDAyMmUwYjdlOTdmM2MzM2I1NjVjMDdlYzAzYjFhODZhNGJlOTllMDAKKgiGiIPYuMWjg2cQi9PavwYY0QkgDCiBjL3oyIDHqF4wz5yauAY4BEDqBxADGgZtYWxpdmEiIDExMmEwMGVhM2Q4NTQyZDAyY2ZiMDY2YTlkMWRjNGE1; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly; Secure
+Set-Cookie: ssid_ucp_v1=1.0.0-KDAyMmUwYjdlOTdmM2MzM2I1NjVjMDdlYzAzYjFhODZhNGJlOTllMDAKKgiGiIPYuMWjg2cQi9PavwYY0QkgDCiBjL3oyIDHqF4wz5yauAY4BEDqBxADGgZtYWxpdmEiIDExMmEwMGVhM2Q4NTQyZDAyY2ZiMDY2YTlkMWRjNGE1; Path=/; Domain=musical.ly; Max-Age=15552000; HttpOnly; Secure; SameSite=None
+Set-Cookie: reg-store-region=; Path=/; Domain=musical.ly; Max-Age=0; HttpOnly; Secure
+Set-Cookie: store-idc=alisg; Path=/; Domain=musical.ly; Max-Age=31536000; HttpOnly
+Set-Cookie: store-country-sign=MEIEDLNh1mov4CjKGeiYrwQgIr1uzA-oGjEM9xLCaYs1iIwkB6mYdE-XuDkD9cnDPgcEEAXgqjgORWcM6ul_z-vBSLc; Path=/; Domain=musical.ly; Max-Age=31536000; HttpOnly
+Set-Cookie: store-country-code=tr; Path=/; Domain=musical.ly; Max-Age=31536000; HttpOnly
+Set-Cookie: store-country-code-src=uid; Path=/; Domain=musical.ly; Max-Age=31536000; HttpOnly 
