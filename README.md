@@ -8,6 +8,7 @@ TikTok için doğrudan HTTP istekleriyle çalışan, reverse engineering mantı�
 - Video yorumu yapma
 - Video beğenme
 - Kullanıcı takip etme
+- Kullanıcı adı ve şifre ile doğrudan giriş yapma
 - Tarayıcı çerezleri kullanarak kimlik doğrulama
 
 ## Kurulum
@@ -21,9 +22,21 @@ pip install -r requirements.txt
 
 ## Kullanım
 
-### 1. Gerekli Tokenların Alınması
+### 1. Giriş Yapma
 
-TikTok API botunu kullanabilmek için öncelikle tarayıcınızdan bazı kimlik bilgilerini almanız gerekiyor. Bu kimlik bilgileri (token'lar) TikTok'a giriş yapmış bir tarayıcı oturumundan alınmalıdır.
+TikTok API botunu kullanmak için iki farklı yöntemle giriş yapabilirsiniz:
+
+#### A. Doğrudan Kullanıcı Adı ve Şifre ile Giriş (Yeni Özellik)
+
+Artık doğrudan kullanıcı adı ve şifre ile giriş yapabilirsiniz:
+
+```bash
+python tiktok_reverse_api.py --username "kullaniciadi" --password "şifre" --video_id 7190527287440151814 --comment "Harika video!"
+```
+
+Bu yöntem, tarayıcıdan token almanıza gerek kalmadan API'yi kullanmanızı sağlar.
+
+#### B. Tarayıcı Token'ları ile Giriş
 
 Token'ları almanın en kolay yolu, tarayıcıdan çerezleri dışa aktarmak ve `get_tiktok_tokens.py` script'ini kullanmaktır:
 
@@ -54,27 +67,47 @@ python tiktok_reverse_api.py --env_file .env --video_id 7190527287440151814 --co
 
 Video beğenmek için:
 ```bash
-python tiktok_reverse_api.py --env_file .env --video_id 7190527287440151814 --like
+python tiktok_reverse_api.py --username "kullaniciadi" --password "şifre" --video_id 7190527287440151814 --like
 ```
 
 Video sahibini takip etmek için:
 ```bash
-python tiktok_reverse_api.py --env_file .env --video_id 7190527287440151814 --follow
+python tiktok_reverse_api.py --username "kullaniciadi" --password "şifre" --video_id 7190527287440151814 --follow
 ```
 
 Birden fazla işlemi aynı anda yapmak:
 ```bash
-python tiktok_reverse_api.py --env_file .env --video_id 7190527287440151814 --comment "Harika!" --like --follow
+python tiktok_reverse_api.py --username "kullaniciadi" --password "şifre" --video_id 7190527287440151814 --comment "Harika!" --like --follow
 ```
+
+### Doğrudan Giriş Testi
+
+Doğrudan giriş işlevini test etmek için:
+
+```bash
+python test_login.py --username "kullaniciadi" --password "şifre" --save_tokens --test_api --video_id 7190527287440151814
+```
+
+Bu komut:
+- Kullanıcı adı ve şifre ile giriş yapacak
+- Elde edilen token'ları `.env.login` dosyasına kaydedecek
+- API işlevlerini test edecek ve belirtilen video hakkında bilgi alacak
 
 ### Parametreler
 
 Bot için kullanabileceğiniz parametreler:
 
+#### Token-based Authentication
 - `--session_id`: TikTok oturum kimliği (sessionid çerezi)
 - `--ms_token`: TikTok ms_token değeri
 - `--device_id`: TikTok cihaz ID'si (s_v_web_id çerezi)
 - `--env_file`: Token'ların bulunduğu .env dosyasının yolu
+
+#### Direct Login
+- `--username`: TikTok kullanıcı adı veya email
+- `--password`: TikTok şifresi
+
+#### Actions
 - `--video_id`: Etkileşimde bulunulacak videonun ID'si
 - `--comment`: Gönderilecek yorum metni
 - `--like`: Videoyu beğen
@@ -84,7 +117,7 @@ Bot için kullanabileceğiniz parametreler:
 
 Bu API, TikTok'un web sürümünün network isteklerini taklit ederek çalışır. Web uygulamasının kullandığı endpoint'leri ve istekleri analiz ederek:
 
-1. Gerekli HTTP başlıklarını ve çerezleri ayarlar
+1. Kullanıcı adı ve şifre ile doğrudan giriş yapar veya gerekli HTTP başlıklarını ve çerezleri ayarlar
 2. İstek parametrelerini doğru formatta oluşturur
 3. Doğrudan TikTok'un API endpoint'lerine HTTP istekleri gönderir
 
@@ -100,6 +133,7 @@ Bu yaklaşım sayesinde, herhangi bir tarayıcı otomasyonu veya üçüncü tara
 
 ## Sorun Giderme
 
+- Doğrudan giriş ile ilgili sorunlarda, TikTok'un CAPTCHA veya diğer güvenlik önlemlerini etkinleştirmiş olabileceğini unutmayın.
 - Token'lar genellikle belirli bir süre sonra geçerliliğini yitirir. Botun çalışmayı durdurması durumunda, yeni token'lar almanız gerekebilir.
 - "Login failed" hatası alırsanız, oturum token'larınızın süresi dolmuş demektir. Tarayıcıda tekrar giriş yapın ve yeni token'lar alın.
 - "CSRF token not available" hatası için, tarayıcıda TikTok'a giriş yapıp token'ları yeniden alın.

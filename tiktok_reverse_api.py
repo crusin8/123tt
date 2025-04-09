@@ -6,8 +6,12 @@ import string
 import hashlib
 import requests
 import argparse
+import logging
 from urllib.parse import urlencode
 from dotenv import load_dotenv
+
+# Import the TikTokLogin class
+from tiktok_login import TikTokLogin
 
 class TikTokReverseAPI:
     def __init__(self, session_id=None, ms_token=None, device_id=None, csrf_token=None):
@@ -18,6 +22,23 @@ class TikTokReverseAPI:
         self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         self.session = requests.Session()
         self.api_base = "https://www.tiktok.com/api"
+        
+    @classmethod
+    def login(cls, username, password):
+        """Login to TikTok with username and password and return API instance"""
+        login_client = TikTokLogin()
+        tokens = login_client.get_tokens(username, password)
+        
+        if not tokens or 'session_id' not in tokens:
+            logging.error("Login failed: Could not obtain tokens")
+            return None
+            
+        return cls(
+            session_id=tokens.get('session_id'),
+            ms_token=tokens.get('ms_token'),
+            device_id=tokens.get('device_id'),
+            csrf_token=tokens.get('csrf_token')
+        )
         
     def _setup_session(self):
         """Setup session with cookies and headers"""
@@ -289,11 +310,21 @@ class TikTokReverseAPI:
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description='TikTok Reverse Engineered API Tool')
-    parser.add_argument('--session_id', help='TikTok session ID (sessionid cookie)')
-    parser.add_argument('--ms_token', help='TikTok ms_token cookie value')
-    parser.add_argument('--device_id', help='TikTok device ID (s_v_web_id cookie)')
-    parser.add_argument('--csrf_token', help='TikTok CSRF token (tt_csrf_token or passport_csrf_token cookie)')
-    parser.add_argument('--env_file', help='Path to .env file with credentials')
+    
+    # Token-based authentication options
+    token_group = parser.add_argument_group('Token-based authentication')
+    token_group.add_argument('--session_id', help='TikTok session ID (sessionid cookie)')
+    token_group.add_argument('--ms_token', help='TikTok ms_token cookie value')
+    token_group.add_argument('--device_id', help='TikTok device ID (s_v_web_id cookie)')
+    token_group.add_argument('--csrf_token', help='TikTok CSRF token (tt_csrf_token or passport_csrf_token cookie)')
+    token_group.add_argument('--env_file', help='Path to .env file with credentials')
+    
+    # Direct login options
+    login_group = parser.add_argument_group('Direct login')
+    login_group.add_argument('--username', help='TikTok username or email')
+    login_group.add_argument('--password', help='TikTok password')
+    
+    # Action options
     parser.add_argument('--video_id', help='TikTok video ID to interact with')
     parser.add_argument('--comment', help='Comment text to post')
     parser.add_argument('--like', action='store_true', help='Like the video')
@@ -301,28 +332,40 @@ def main():
     
     args = parser.parse_args()
     
-    # Load from .env file if specified
-    if args.env_file:
-        load_dotenv(args.env_file)
+    # Initialize API with either direct login or tokens
+    api = None
+    
+    # Try direct login if username and password provided
+    if args.username and args.password:
+        print(f"Attempting to login with username: {args.username}")
+        api = TikTokReverseAPI.login(args.username, args.password)
+        if not api:
+            print("Login failed with username and password. Please check your credentials.")
+            return
+        print("Login successful with username and password!")
+    else:
+        # Load from .env file if specified
+        if args.env_file:
+            load_dotenv(args.env_file)
+            
+        # Get credentials (prioritize command line args over .env)
+        session_id = args.session_id or os.getenv('TIKTOK_SESSION_ID')
+        ms_token = args.ms_token or os.getenv('TIKTOK_MS_TOKEN')
+        device_id = args.device_id or os.getenv('TIKTOK_DEVICE_ID')
+        csrf_token = args.csrf_token or os.getenv('TIKTOK_CSRF_TOKEN')
         
-    # Get credentials (prioritize command line args over .env)
-    session_id = args.session_id or os.getenv('TIKTOK_SESSION_ID')
-    ms_token = args.ms_token or os.getenv('TIKTOK_MS_TOKEN')
-    device_id = args.device_id or os.getenv('TIKTOK_DEVICE_ID')
-    csrf_token = args.csrf_token or os.getenv('TIKTOK_CSRF_TOKEN')
-    
-    if not session_id:
-        print("Error: session_id is required")
-        print("Provide it either as command line argument or in a .env file")
-        return
-    
-    # Initialize the API
-    api = TikTokReverseAPI(
-        session_id=session_id,
-        ms_token=ms_token,
-        device_id=device_id,
-        csrf_token=csrf_token
-    )
+        if not session_id:
+            print("Error: Either username/password or session_id is required")
+            print("Provide credentials either as command line arguments or in a .env file")
+            return
+        
+        # Initialize the API with tokens
+        api = TikTokReverseAPI(
+            session_id=session_id,
+            ms_token=ms_token,
+            device_id=device_id,
+            csrf_token=csrf_token
+        )
     
     # Check if login is valid
     if not api.login_status():
