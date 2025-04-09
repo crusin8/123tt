@@ -1,0 +1,41 @@
+2025-04-09 21:13:55,385 - INFO - === Testing Direct Login Method ===
+2025-04-09 21:13:55,385 - INFO - Getting CSRF token...
+2025-04-09 21:13:55,415 - DEBUG - Starting new HTTPS connection (1): www.tiktok.com:443
+2025-04-09 21:13:56,551 - DEBUG - https://www.tiktok.com:443 "GET /login/ HTTP/1.1" 200 None
+2025-04-09 21:13:56,580 - INFO - Initial cookies: {'tt_csrf_token': 'OTbKWP6d-NSQNh9BC9_rFvCMSMibUqp5DMk4', 'ttwid': '1%7CamiCNgyU_m7YQINJtxOyFi76yw366IBm5BAhssgOFmA%7C1744222436%7Cf7a96b6203c5872dd9c33896bc25e7c0f24d98ab330977bd690d03d9d695eaff'}
+2025-04-09 21:13:56,581 - INFO - Got CSRF token: OTbKWP6d-NSQNh9BC9_rFvCMSMibUqp5DMk4
+2025-04-09 21:13:56,581 - INFO - Making login request...
+2025-04-09 21:13:56,828 - DEBUG - https://www.tiktok.com:443 "POST /passport/web/login_v2/ HTTP/1.1" 404 88
+2025-04-09 21:13:56,830 - INFO - Login response status: 404
+2025-04-09 21:13:56,831 - INFO - Login response data: {
+  "data": {
+    "description": "internal server error"
+  },
+  "message": "exception"
+}
+2025-04-09 21:13:56,832 - ERROR - Login error: exception
+2025-04-09 21:13:56,832 - ERROR - Login failed: No success indicators in response
+2025-04-09 21:13:56,848 - WARNING - Direct login method failed
+2025-04-09 21:13:56,849 - INFO - === Testing SSO Login Method ===
+2025-04-09 21:13:56,849 - INFO - Getting CSRF token for SSO login...
+2025-04-09 21:13:56,855 - DEBUG - Starting new HTTPS connection (1): www.tiktok.com:443
+2025-04-09 21:13:57,474 - DEBUG - https://www.tiktok.com:443 "GET /login/ HTTP/1.1" 200 1830
+2025-04-09 21:13:57,474 - ERROR - Failed to get CSRF token for SSO login
+2025-04-09 21:13:57,476 - WARNING - SSO login method failed
+2025-04-09 21:13:57,477 - INFO - === Testing Mobile API Login Method ===
+2025-04-09 21:13:57,477 - INFO - Making mobile API login request...
+2025-04-09 21:13:57,489 - DEBUG - Starting new HTTPS connection (1): api16-normal-c-useast1a.tiktokv.com:443
+2025-04-09 21:13:58,050 - DEBUG - https://api16-normal-c-useast1a.tiktokv.com:443 "POST /passport/user/login/ HTTP/1.1" 200 133
+2025-04-09 21:13:58,057 - INFO - Mobile API Login response status: 200
+2025-04-09 21:13:58,057 - INFO - Mobile API Login response data: {
+  "data": {
+    "captcha": "",
+    "desc_url": "",
+    "description": "Maximum number of attempts reached. Try again later.",
+    "error_code": 7
+  },
+  "message": "error"
+}
+2025-04-09 21:13:58,057 - ERROR - Mobile API login failed: error
+2025-04-09 21:13:58,061 - WARNING - Mobile API login method failed
+2025-04-09 21:13:58,061 - ERROR - ❌ All login methods failed
